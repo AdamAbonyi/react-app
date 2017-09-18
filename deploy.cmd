@@ -1,2 +1,4 @@
-echo %cd%
-\node_modules\.bin\react-scripts build
+@echo off
+echo Deploy Script...
+cd ../wwwroot/
+npm run build
