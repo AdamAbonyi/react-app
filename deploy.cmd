@@ -105,6 +105,7 @@ IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
 call :SelectNodeVersion
 
 :: 3. Build
+echo %~dp0%
 call !NODE_EXE! ./node_modules/.bin/react-scripts build
 
 :: 5. Install npm packages
