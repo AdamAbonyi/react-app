@@ -75,7 +75,7 @@ IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
 )
 
 :: 2. Build
-call !NPM_CMD! build
+call "!NODE_EXE!" ./node_modules/.bin/react-scripts build
 
 :: 5. Install npm packages
 REM IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
