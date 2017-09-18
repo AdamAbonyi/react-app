@@ -61,7 +61,8 @@ IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
 )
 
 :: 2. NPM Build
- call !NPM_CMD! build 
+echo "Trying to build webpack"
+ call ./node_modules/.bin/react-scripts build 
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 goto end
