@@ -1,1 +1,1 @@
-..\node_modules\.bin\npm run build
+node_modules\.bin\react-scripts build
