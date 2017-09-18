@@ -110,9 +110,9 @@ call !NPM_CMD! install --production
 :: Let's manually call grunt with the correct version of node (using the "!NODE_EXE!" variable)
 call !NPM_CMD! ./node_modules/.bin/react-scripts build
 
-:: 1. KuduSync
-call %KUDU_SYNC_CMD% -v 50 -f "%DEPLOYMENT_SOURCE%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
-IF !ERRORLEVEL! NEQ 0 goto error
+REM :: 5. KuduSync
+REM call %KUDU_SYNC_CMD% -v 50 -f "%DEPLOYMENT_SOURCE%"\build -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
+REM IF !ERRORLEVEL! NEQ 0 goto error
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
