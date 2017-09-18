@@ -54,16 +54,33 @@ IF NOT DEFINED KUDU_SYNC_CMD (
 
 echo Handling Basic Web Site deployment.
 
-:: 1. KuduSync
+
+
+:: 1. Install build dependencies
+pushd "%DEPLOYMENT_SOURCE%"
+call :ExecuteCmd !NPM_CMD! install --production
+IF !ERRORLEVEL! NEQ 0 goto error
+popd
+
+:: 2. Run build command
+pushd "%DEPLOYMENT_SOURCE%"
+call :ExecuteCmd !NPM_CMD! run-script build
+IF !ERRORLEVEL! NEQ 0 goto error
+popd
+
+:: 3. KuduSync
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
   call :ExecuteCmd "%KUDU_SYNC_CMD%" -v 50 -f "%DEPLOYMENT_SOURCE%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
   IF !ERRORLEVEL! NEQ 0 goto error
 )
 
-:: 2. NPM Build
-echo Trying to build webpack
-echo %KUDU_SYNC_CMD%
-call :ExecuteCmd .\node_modules\.bin\react-scripts.cmd build 
+:: 5. Install npm packages
+IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
+  pushd "%DEPLOYMENT_TARGET%"
+  call :ExecuteCmd !NPM_CMD! install --production
+  IF !ERRORLEVEL! NEQ 0 goto error
+  popd
+)
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 goto end
