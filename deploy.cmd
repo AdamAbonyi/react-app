@@ -61,8 +61,9 @@ IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
 )
 
 :: 2. NPM Build
-echo "Trying to build webpack"
-.\node_modules\.bin\react-scripts.cmd build 
+echo Trying to build webpack
+echo %KUDU_SYNC_CMD
+call :ExecuteCmd .\node_modules\.bin\react-scripts.cmd build 
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 goto end
