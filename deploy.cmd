@@ -1,7 +1,8 @@
-@echo off
+@if "%SCM_TRACE_LEVEL%" NEQ "4" @echo off
 
 :: ----------------------
 :: KUDU Deployment Script
+:: Version: 1.0.15
 :: ----------------------
 
 :: Prerequisites
@@ -19,7 +20,7 @@ IF %ERRORLEVEL% NEQ 0 (
 
 setlocal enabledelayedexpansion
 
-SET ARTIFACTS=%~dp0%artifacts
+SET ARTIFACTS=%~dp0%..\artifacts
 
 IF NOT DEFINED DEPLOYMENT_SOURCE (
   SET DEPLOYMENT_SOURCE=%~dp0%.
@@ -44,7 +45,7 @@ IF NOT DEFINED KUDU_SYNC_CMD (
   IF !ERRORLEVEL! NEQ 0 goto error
 
   :: Locally just running "kuduSync" would also work
-  SET KUDU_SYNC_CMD=node "%appdata%\npm\node_modules\kuduSync\bin\kuduSync"
+  SET KUDU_SYNC_CMD=%appdata%\npm\kuduSync.cmd
 )
 goto Deployment
 
@@ -62,12 +63,17 @@ IF DEFINED KUDU_SELECT_NODE_VERSION_CMD (
     SET /p NODE_EXE=<"%DEPLOYMENT_TEMP%\__nodeVersion.tmp"
     IF !ERRORLEVEL! NEQ 0 goto error
   )
+  
+  IF EXIST "%DEPLOYMENT_TEMP%\__npmVersion.tmp" (
+    SET /p NPM_JS_PATH=<"%DEPLOYMENT_TEMP%\__npmVersion.tmp"
+    IF !ERRORLEVEL! NEQ 0 goto error
+  )
 
   IF NOT DEFINED NODE_EXE (
     SET NODE_EXE=node
   )
 
-  SET NPM_CMD="!NODE_EXE!" "%NPM_JS_PATH%"
+  SET NPM_CMD="!NODE_EXE!" "!NPM_JS_PATH!"
 ) ELSE (
   SET NPM_CMD=npm
   SET NODE_EXE=node
@@ -82,43 +88,40 @@ goto :EOF
 :Deployment
 echo Handling node.js deployment.
 
-:: 2. Select node version
+echo 1. Select node version
 call :SelectNodeVersion
 
-:: 3. Install npm packages
-IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
-  pushd %DEPLOYMENT_TARGET%
-  call !NPM_CMD! install --production
+echo 2. Install npm packages
+pushd "%DEPLOYMENT_SOURCE%"
+IF EXIST "package.json" (
+  call :ExecuteCmd !NPM_CMD! install --production
   IF !ERRORLEVEL! NEQ 0 goto error
-  popd
+
+  echo React Scripts
+  call .\node_modules\.bin\react-scripts build
+  IF !ERRORLEVEL! NEQ 0 goto error
+)
+popd
+
+echo 3. KuduSync
+IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
+  call :ExecuteCmd "%KUDU_SYNC_CMD%" -v 50 -f "%DEPLOYMENT_SOURCE%\build" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
+  IF !ERRORLEVEL! NEQ 0 goto error
 )
 
-echo ************** call node --version
-call node --version
-
-echo ************** call node --version
-REM call !NPM_CMD! install --production
- 
-:: 4. Run our grunt task
-
-:: 4.2 
-::
-:: NOTE: this won't work as it will not run with the package.json configure 
-:: 0.8.x version of node and will instead run with the 0.6.x version
-:: call node ./node_modules/grunt-cli/bin/grunt release
-:: 
-:: Let's manually call grunt with the correct version of node (using the "!NODE_EXE!" variable)
-call !NPM_CMD! ./node_modules/.bin/react-scripts build
-
-REM :: 5. KuduSync
-REM call %KUDU_SYNC_CMD% -v 50 -f "%DEPLOYMENT_SOURCE%"\build -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
-REM IF !ERRORLEVEL! NEQ 0 goto error
-
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
 goto end
 
+:: Execute command routine that will echo out when error
+:ExecuteCmd
+setlocal
+set _CMD_=%*
+call %_CMD_%
+if "%ERRORLEVEL%" NEQ "0" echo Failed exitCode=%ERRORLEVEL%, command=%_CMD_%
+exit /b %ERRORLEVEL%
+
 :error
+endlocal
 echo An error has occurred during web site deployment.
 call :exitSetErrorLevel
 call :exitFromFunction 2>nul
@@ -130,4 +133,5 @@ exit /b 1
 ()
 
 :end
+endlocal
 echo Finished successfully.
