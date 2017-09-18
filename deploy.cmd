@@ -104,8 +104,16 @@ IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
 :: 2. Select node version
 call :SelectNodeVersion
 
+:: 3. Install npm packages
+IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
+  pushd %DEPLOYMENT_TARGET%
+  call !NPM_CMD! install --production
+  IF !ERRORLEVEL! NEQ 0 goto error
+  popd
+)
+
 :: 3. Build
-echo %~dp0%
+echo Buliding
 call !NODE_EXE! ./node_modules/.bin/react-scripts build
 
 :: 5. Install npm packages
