@@ -97,7 +97,7 @@ echo ************** call node --version
 call node --version
 
 echo ************** call node --version
-#call !NPM_CMD! install --production
+REM call !NPM_CMD! install --production
  
 :: 4. Run our grunt task
 
