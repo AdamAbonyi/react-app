@@ -1,1 +1,2 @@
-..\node_modules\.bin\react-scripts build
+echo %cd%
+\node_modules\.bin\react-scripts build
