@@ -57,10 +57,10 @@ echo Handling Basic Web Site deployment.
 
 
 :: 1. Install build dependencies
-pushd "%DEPLOYMENT_SOURCE%"
-call :ExecuteCmd !NPM_CMD! install 
-IF !ERRORLEVEL! NEQ 0 goto error
-popd
+REM pushd "%DEPLOYMENT_SOURCE%"
+REM call :ExecuteCmd !NPM_CMD! install 
+REM IF !ERRORLEVEL! NEQ 0 goto error
+REM popd
 
 :: 2. Run build command
 pushd "%DEPLOYMENT_SOURCE%"
@@ -75,12 +75,12 @@ IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
 )
 
 :: 5. Install npm packages
-IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
-  pushd "%DEPLOYMENT_TARGET%"
-  call :ExecuteCmd !NPM_CMD! install 
-  IF !ERRORLEVEL! NEQ 0 goto error
-  popd
-)
+REM IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
+REM   pushd "%DEPLOYMENT_TARGET%"
+REM   call :ExecuteCmd !NPM_CMD! install 
+REM   IF !ERRORLEVEL! NEQ 0 goto error
+REM   popd
+REM )
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 goto end
