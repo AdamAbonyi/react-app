@@ -56,23 +56,26 @@ echo Handling Basic Web Site deployment.
 
 
 
-:: 1. Install build dependencies
+REM :: 1. Install build dependencies
 REM pushd "%DEPLOYMENT_SOURCE%"
 REM call :ExecuteCmd !NPM_CMD! install 
 REM IF !ERRORLEVEL! NEQ 0 goto error
 REM popd
 
-:: 2. Run build command
-pushd "%DEPLOYMENT_SOURCE%"
-call :ExecuteCmd !NPM_CMD! run-script build
-IF !ERRORLEVEL! NEQ 0 goto error
-popd
+REM :: 2. Run build command
+REM pushd "%DEPLOYMENT_SOURCE%"
+REM call :ExecuteCmd !NPM_CMD! run-script build
+REM IF !ERRORLEVEL! NEQ 0 goto error
+REM popd
 
-:: 3. KuduSync
+:: 1. KuduSync
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
   call :ExecuteCmd "%KUDU_SYNC_CMD%" -v 50 -f "%DEPLOYMENT_SOURCE%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
   IF !ERRORLEVEL! NEQ 0 goto error
 )
+
+:: 2. Build
+call !NPM_CMD! build
 
 :: 5. Install npm packages
 REM IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
