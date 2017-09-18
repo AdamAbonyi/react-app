@@ -101,7 +101,10 @@ IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
   IF !ERRORLEVEL! NEQ 0 goto error
 )
 
-:: 2. Build
+:: 2. Select node version
+call :SelectNodeVersion
+
+:: 3. Build
 call !NODE_EXE! ./node_modules/.bin/react-scripts build
 
 :: 5. Install npm packages
