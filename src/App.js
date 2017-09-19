@@ -17,7 +17,6 @@ class App extends Component {
         <p className="App-intro">
           {/* To get started, edit <code>src/App.js</code> and save to reload. */}
           Kiss Adam to continue. Also i have added a button that does nothing :-)
-          Level 1
         </p>
         <RaisedButton label="Material UI" />
         <Tralala name="adam"/>
