@@ -11,7 +11,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     const defaultValue = "funny";
-    this.state = { 
+    this.state = {
       name: defaultValue,
       src: undefined,
       input: defaultValue
@@ -21,46 +21,49 @@ class App extends Component {
     this.setSubredditName = this.setSubredditName.bind(this);
   }
 
-  callBot() {
+  callBot(event) {
     this.setState({
       name: this.state.input,
       src: undefined
     }, () => {
       Fetch.getData(this.state.name).then(response => response.json()).then(s => {
-        this.setState({src: s.replace("\"","")});
-      });    
+        this.setState({ src: s.replace("\"", "") });
+      });
     });
-    
-    
+
+    event.preventDefault();
   }
 
   setSubredditName(object, newValue) {
-    this.setState({input: newValue});
+    this.setState({ input: newValue });
   }
 
   render() {
     return (
       <MuiThemeProvider>
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>b0brBot test page in React</h2>
-        </div>
-        <p className="App-intro">
-          The section below will allow you to test the b0brBot.
+        <div className="App">
+          <div className="App-header">
+            <img src={logo} className="App-logo" alt="logo" />
+            <h2>b0brBot test page in React</h2>
+          </div>
+          <p className="App-intro">
+            The section below will allow you to test the b0brBot.
         </p>
-        <TextField
-          id="text-field-default"
-          defaultValue="funny"
-          onChange={this.setSubredditName}
-        />
-        <RaisedButton label="Material UI" onClick={this.callBot}/>
-        <hr />
-        {this.state.src &&
-            <Screen src={this.state.src}/>
-        }
-      </div>
-      
+          <form onSubmit={this.callBot}>
+            <TextField
+              id="text-field-default"
+              defaultValue="funny"
+              onChange={this.setSubredditName}
+            />
+            &nbsp;
+            <RaisedButton label="Search" type="submit" />
+          </form>
+          <hr />
+          {this.state.src &&
+            <Screen src={this.state.src} />
+          }
+        </div>
+
 
       </MuiThemeProvider>
     );
