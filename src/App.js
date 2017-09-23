@@ -1,24 +1,68 @@
 import React, { Component } from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import RaisedButton from 'material-ui/RaisedButton';
+import TextField from 'material-ui/TextField';
+import Fetch from './service/fetch';
+import Screen from './Screen';
 import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    const defaultValue = "funny";
+    this.state = { 
+      name: defaultValue,
+      src: undefined,
+      input: defaultValue
+    };
+
+    this.callBot = this.callBot.bind(this);
+    this.setSubredditName = this.setSubredditName.bind(this);
+  }
+
+  callBot() {
+    this.setState({
+      name: this.state.input,
+      src: undefined
+    }, () => {
+      Fetch.getData(this.state.name).then(response => response.json()).then(s => {
+        this.setState({src: s.replace("\"","")});
+      });    
+    });
+    
+    
+  }
+
+  setSubredditName(object, newValue) {
+    this.setState({input: newValue});
+  }
+
   render() {
     return (
       <MuiThemeProvider>
       <div className="App">
         <div className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to Adam's React Test Page</h2>
+          <h2>b0brBot test page in React</h2>
         </div>
         <p className="App-intro">
-          {/* To get started, edit <code>src/App.js</code> and save to reload. */}
-          Kiss Adam to continue. Also i have added a button that does nothing :-)
+          The section below will allow you to test the b0brBot.
         </p>
-        <RaisedButton label="Material UI" />
+        <TextField
+          id="text-field-default"
+          defaultValue="funny"
+          onChange={this.setSubredditName}
+        />
+        <RaisedButton label="Material UI" onClick={this.callBot}/>
+        <hr />
+        {this.state.src &&
+            <Screen src={this.state.src}/>
+        }
+        
       </div>
+      
+
       </MuiThemeProvider>
     );
   }
