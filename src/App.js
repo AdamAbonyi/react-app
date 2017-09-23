@@ -59,7 +59,6 @@ class App extends Component {
         {this.state.src &&
             <Screen src={this.state.src}/>
         }
-        
       </div>
       
 
@@ -69,3 +68,7 @@ class App extends Component {
 }
 
 export default App;
+
+
+
+
